@@ -1,103 +1,114 @@
-package com.example.wingbu.usetimestatistic.file;
+package com.example.wingbu.usetimestatistic.file
 
-import android.util.Log;
-
-import com.example.wingbu.usetimestatistic.domain.AppUsageDaily;
-import com.example.wingbu.usetimestatistic.utils.DateTransUtils;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
+import android.util.Log
+import com.example.wingbu.usetimestatistic.domain.AppUsageDaily
+import com.example.wingbu.usetimestatistic.utils.DateTransUtils
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+import java.util.*
 
 /**
  * Created by Wingbu on 2017/7/18.
  */
-
-public class WriteStatisticDataFileUtils {
-    public static final String TAG             = "WriteStatisticDataFileUtils";
-    public static final String BASE_FILE_PATH  = "/data/data/com.example.wingbu.usetimestatistic/files/statics";
-    public static final String FILE_NAME       = "current.txt";
-    public static final long   MAX_FILE_SIZE   = 10 * 1024 * 1024;
+object WriteStatisticDataFileUtils {
+    const val TAG = "WriteStatisticDataFileUtils"
+    const val BASE_FILE_PATH = "/data/data/com.example.wingbu.usetimestatistic/files/statics"
+    const val FILE_NAME = "current.txt"
+    const val MAX_FILE_SIZE = (10 * 1024 * 1024).toLong()
 
     // =======================================
     // Write  Files
     // =======================================
-
-    public static void write(ArrayList<AppUsageDaily> AppUsageList){
-        checkFile();
-        writeToFile(AppUsageList);
+    fun write(AppUsageList: ArrayList<AppUsageDaily>) {
+        checkFile()
+        writeToFile(AppUsageList)
     }
 
-    private static void writeToFile(ArrayList<AppUsageDaily> appUsageList){
-        File file = new File(BASE_FILE_PATH + "/" + FILE_NAME);
-        if(!file.exists()){
-            createFile(file);
+    private fun writeToFile(appUsageList: ArrayList<AppUsageDaily>) {
+        val file = File(BASE_FILE_PATH + "/" + FILE_NAME)
+        if (!file.exists()) {
+            createFile(file)
         }
-
-        Log.i(TAG," WriteStatisticDataFileUtils--writeToFile()  写入文件天数 :" + appUsageList.size());
+        Log.i(TAG, " WriteStatisticDataFileUtils--writeToFile()  写入文件天数 :" + appUsageList.size)
         try {
             // 打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
-            FileWriter writer = new FileWriter(file, true);
-            long currentTime = System.currentTimeMillis();
-            writer.write("本次写入文件的时间为 : "+ currentTime + "   "+ DateTransUtils.stampToDate(currentTime)+"\n");
-
-            for (int i = 0 ; i < appUsageList.size() ; i++){
-                writeAppUsage(writer,appUsageList.get(i));
+            val writer = FileWriter(file, true)
+            val currentTime = System.currentTimeMillis()
+            writer.write(
+                """本次写入文件的时间为 : $currentTime   ${DateTransUtils.stampToDate(currentTime)}
+"""
+            )
+            for (i in appUsageList.indices) {
+                writeAppUsage(writer, appUsageList[i])
             }
-            writer.close();
-            Log.i(TAG," WriteStatisticDataFileUtils--writeToFile()  写入文件成功 " );
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            writer.close()
+            Log.i(TAG, " WriteStatisticDataFileUtils--writeToFile()  写入文件成功 ")
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 
-    private static void writeAppUsage(FileWriter writer,AppUsageDaily appUsageDaily){
+    private fun writeAppUsage(writer: FileWriter, appUsageDaily: AppUsageDaily) {
         try {
-            writer.write("当前数据所属日期 : "+appUsageDaily.getmStartTimeStamp() + "   "+DateTransUtils.stampToDate(appUsageDaily.getmStartTimeStamp())+"\n");
-            writer.write("当前数据Flag : "+appUsageDaily.getmFlag()+"\n");
-            if(appUsageDaily.getmPackageInfoListByEvent() != null && appUsageDaily.getmPackageInfoListByEvent().size() > 0){
-                for ( int i = 0 ; i < appUsageDaily.getmPackageInfoListByEvent().size() ; i++){
-                    writer.write("event :  "+appUsageDaily.getmPackageInfoListByEvent().get(i).getmPackageName() + "  使用次数:"+appUsageDaily.getmPackageInfoListByEvent().get(i).getmUsedCount()+ "    使用时长:"+appUsageDaily.getmPackageInfoListByEvent().get(i).getmUsedTime()+"\n");
+            writer.write(
+                """当前数据所属日期 : ${appUsageDaily.startTimeStamp}   ${
+                    DateTransUtils.stampToDate(
+                        appUsageDaily.startTimeStamp
+                    )
+                }
+"""
+            )
+            writer.write(
+                """
+    当前数据Flag : ${appUsageDaily.flag}
+    
+    """.trimIndent()
+            )
+            if (appUsageDaily.packageInfoListByEvent != null && appUsageDaily.packageInfoListByEvent.size > 0) {
+                for (i in appUsageDaily.packageInfoListByEvent.indices) {
+                    writer.write(
+                        """event :  ${appUsageDaily.packageInfoListByEvent[i].packageName}  使用次数:${appUsageDaily.packageInfoListByEvent[i].usedCount}    使用时长:${appUsageDaily.packageInfoListByEvent[i].usedTime}
+"""
+                    )
                 }
             }
-            if(appUsageDaily.getmPackageInfoListByUsage() != null && appUsageDaily.getmPackageInfoListByUsage().size() > 0){
-                for ( int j = 0 ; j < appUsageDaily.getmPackageInfoListByUsage().size() ; j++){
-                    writer.write("usage :  "+appUsageDaily.getmPackageInfoListByUsage().get(j).getmPackageName() + "  使用次数:"+appUsageDaily.getmPackageInfoListByUsage().get(j).getmUsedCount()+ "    使用时长:"+appUsageDaily.getmPackageInfoListByUsage().get(j).getmUsedTime()+"\n");
+            if (appUsageDaily.packageInfoListByUsage != null && appUsageDaily.packageInfoListByUsage.size > 0) {
+                for (j in appUsageDaily.packageInfoListByUsage.indices) {
+                    writer.write(
+                        """usage :  ${appUsageDaily.packageInfoListByUsage[j].packageName}  使用次数:${appUsageDaily.packageInfoListByUsage[j].usedCount}    使用时长:${appUsageDaily.packageInfoListByUsage[j].usedTime}
+"""
+                    )
                 }
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 
-    private static void checkFile(){
-        File file = new File(BASE_FILE_PATH + "/" + FILE_NAME);
-        if(file.exists()){
-            if(file.length() > MAX_FILE_SIZE){
-                File newFile = new File(BASE_FILE_PATH + "/" +System.currentTimeMillis()+"-rename.txt");
-                file.renameTo(newFile);
+    private fun checkFile() {
+        val file = File("$BASE_FILE_PATH/$FILE_NAME")
+        if (file.exists()) {
+            if (file.length() > MAX_FILE_SIZE) {
+                val newFile =
+                    File(BASE_FILE_PATH + "/" + System.currentTimeMillis() + "-rename.txt")
+                file.renameTo(newFile)
             }
-        }else {
-            createFile(file);
+        } else {
+            createFile(file)
         }
     }
 
-    private static void createFile(File file){
-        try
-        {
-            if(file.createNewFile()){
-                Log.i(TAG, "  WriteStatisticDataFileUtils--checkFile()    文件创建成功 : "  );
-            }else {
-                Log.i(TAG, "  WriteStatisticDataFileUtils--checkFile()   文件创建失败 : "  );
+    private fun createFile(file: File) {
+        try {
+            if (file.createNewFile()) {
+                Log.i(TAG, "  WriteStatisticDataFileUtils--checkFile()    文件创建成功 : ")
+            } else {
+                Log.i(TAG, "  WriteStatisticDataFileUtils--checkFile()   文件创建失败 : ")
             }
-
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            Log.i(TAG, "  WriteStatisticDataFileUtils--checkFile()   文件创建失败！ : " + e.getMessage());
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Log.i(TAG, "  WriteStatisticDataFileUtils--checkFile()   文件创建失败！ : " + e.message)
         }
     }
 }

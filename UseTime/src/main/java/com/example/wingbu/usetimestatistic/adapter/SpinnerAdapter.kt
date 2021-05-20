@@ -1,15 +1,13 @@
-package com.example.wingbu.usetimestatistic.adapter;
+package com.example.wingbu.usetimestatistic.adapter
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
-
-import com.example.wingbu.usetimestatistic.R;
-
-import java.util.ArrayList;
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.TextView
+import com.example.wingbu.usetimestatistic.R
+import java.util.*
 
 /**
  * 主界面中日期选择的SpinnerAdapter
@@ -18,44 +16,38 @@ import java.util.ArrayList;
  *
  * Created by Wingbu on 2017/8/28.
  */
+class SpinnerAdapter : BaseAdapter {
+    private var mList: ArrayList<String>
+    private var mContext: Context? = null
 
-public class SpinnerAdapter extends BaseAdapter{
-
-    private ArrayList<String> mList;
-    private Context mContext;
-
-    public SpinnerAdapter(ArrayList<String> mList, Context mContext) {
-        this.mList = mList;
-        this.mContext = mContext;
+    constructor(mList: ArrayList<String>, mContext: Context?) {
+        this.mList = mList
+        this.mContext = mContext
     }
 
-    public SpinnerAdapter(ArrayList<String> mList) {
-        this.mList = mList;
+    constructor(mList: ArrayList<String>) {
+        this.mList = mList
     }
 
-    @Override
-    public int getCount() {
-        return mList.size();
+    override fun getCount(): Int {
+        return mList.size
     }
 
-    @Override
-    public Object getItem(int i) {
-        return mList.get(i);
+    override fun getItem(i: Int): Any {
+        return mList[i]
     }
 
-    @Override
-    public long getItemId(int i) {
-        return i;
+    override fun getItemId(i: Int): Long {
+        return i.toLong()
     }
 
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-
-        view = LayoutInflater.from(mContext).inflate(R.layout.spinner_item_date, null);
-        if(view != null) {
-            TextView TextView1 = (TextView) view.findViewById(R.id.tv_date);
-            TextView1.setText(mList.get(i));
+    override fun getView(i: Int, view: View, viewGroup: ViewGroup): View {
+        var view = view
+        view = LayoutInflater.from(mContext).inflate(R.layout.spinner_item_date, null)
+        if (view != null) {
+            val TextView1 = view.findViewById<View>(R.id.tv_date) as TextView
+            TextView1.text = mList[i]
         }
-        return view;
+        return view
     }
 }

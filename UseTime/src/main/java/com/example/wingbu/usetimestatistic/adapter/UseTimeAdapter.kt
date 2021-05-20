@@ -1,127 +1,107 @@
-package com.example.wingbu.usetimestatistic.adapter;
+package com.example.wingbu.usetimestatistic.adapter
 
-import android.annotation.TargetApi;
-import android.app.usage.UsageStats;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import androidx.recyclerview.widget.RecyclerView;
-import android.text.format.DateUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.example.wingbu.usetimestatistic.R;
-import com.example.wingbu.usetimestatistic.domain.OneTimeDetails;
-import com.example.wingbu.usetimestatistic.domain.PackageInfo;
-import com.example.wingbu.usetimestatistic.domain.UseTimeDataManager;
-
-import java.util.ArrayList;
+import android.annotation.TargetApi
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.text.format.DateUtils
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.wingbu.usetimestatistic.R
+import com.example.wingbu.usetimestatistic.adapter.UseTimeAdapter.UseTimeViewHolder
+import com.example.wingbu.usetimestatistic.domain.OneTimeDetails
+import com.example.wingbu.usetimestatistic.domain.PackageInfo
+import com.example.wingbu.usetimestatistic.domain.UseTimeDataManager
+import java.util.*
 
 /**
  * Created by Wingbu on 2017/7/19.
  */
-
-public class UseTimeAdapter extends RecyclerView.Adapter<UseTimeAdapter.UseTimeViewHolder>{
-
-    private ArrayList<PackageInfo> mPackageInfoList;
-    private PackageManager packageManager;
-    private UseTimeDataManager mUseTimeDataManager;
-
-    private OnRecyclerViewItemClickListener mOnItemClickListener = null;
-
-    public UseTimeAdapter(Context context, ArrayList<PackageInfo> PackageInfoList) {
-        this.mPackageInfoList = PackageInfoList;
-        mUseTimeDataManager = UseTimeDataManager.getInstance(context);
-    }
-
-    public void modifyData(ArrayList<PackageInfo> List){
-        mPackageInfoList = List;
-    }
+class UseTimeAdapter(context: Context?, private var mPackageInfoList: ArrayList<PackageInfo>) :
+    RecyclerView.Adapter<UseTimeViewHolder>() {
+    private var packageManager: PackageManager? = null
+    private val mUseTimeDataManager: UseTimeDataManager = UseTimeDataManager.getInstance(context)!!
+    private var mOnItemClickListener: OnRecyclerViewItemClickListener? = null
 
     //define interface
-    public  interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view , String pkg);
+    interface OnRecyclerViewItemClickListener {
+        fun onItemClick(view: View?, pkg: String?)
     }
 
-    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
-        this.mOnItemClickListener = listener;
+    fun setOnItemClickListener(listener: OnRecyclerViewItemClickListener?) {
+        mOnItemClickListener = listener
     }
 
-    @Override
-    public UseTimeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        packageManager = parent.getContext().getPackageManager();
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.used_time_item_layout, parent, false);
-        UseTimeViewHolder holder = new UseTimeViewHolder(v);
-        return holder;
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UseTimeViewHolder {
+        packageManager = parent.context.packageManager
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.used_time_item_layout, parent, false)
+        return UseTimeViewHolder(v)
     }
 
-    @Override
-    public void onBindViewHolder(UseTimeViewHolder holder, final int position) {
-        holder.tv_index.setText("" + (position+1) );
+    override fun onBindViewHolder(holder: UseTimeViewHolder, position: Int) {
+        holder.tvIndex.text = (position + 1).toString()
         try {
-            holder.iv_icon.setImageDrawable(packageManager.getApplicationIcon(mPackageInfoList.get(position).getmPackageName()));
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            holder.ivIcon.setImageDrawable(packageManager!!.getApplicationIcon(mPackageInfoList[position].packageName))
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
         }
-        holder.tv_used_count.setText(" " + mPackageInfoList.get(position).getmUsedCount()+"");
-        holder.tv_calculate_used_time.setText(" " + mPackageInfoList.get(position).getmUsedTime()/1000+"s / " + DateUtils.formatElapsedTime(mPackageInfoList.get(position).getmUsedTime()/1000));
-        //DateTransUtils.formatElapsedTime(mPackageInfoList.get(position).getmUsedTime()/1000)
-        holder.tv_used_time.setText(" " + getTotalTimeFromUsage(mPackageInfoList.get(position).getmPackageName())/1000+" s");
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClick(v,mPackageInfoList.get(position).getmPackageName());
-                }
-            }
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return mPackageInfoList.size();
-    }
-
-    public class UseTimeViewHolder extends RecyclerView.ViewHolder {
-
-        public TextView tv_index;
-        public ImageView iv_icon;
-        public TextView   tv_used_count;
-        public TextView   tv_used_time;
-        public TextView   tv_calculate_used_time;
-
-
-        public UseTimeViewHolder(View itemView) {
-            super(itemView);
-            tv_index = (TextView) itemView.findViewById(R.id.index);
-            iv_icon = (ImageView) itemView.findViewById(R.id.app_icon);
-            tv_used_count = (TextView) itemView.findViewById(R.id.use_count);
-            tv_used_time = (TextView) itemView.findViewById(R.id.use_time);
-            tv_calculate_used_time = (TextView) itemView.findViewById(R.id.calculate_use_time);
-        }
-    }
-
-    private long calculateUseTime(ArrayList<OneTimeDetails>  list, String pkg){
-        long useTime = 0 ;
-        for(int i = 0 ; i < list.size() ; i++){
-            if(list.get(i).getPkgName().equals(pkg)){
-                useTime += list.get(i).getUseTime();
+        holder.tvUsedCount.text = "${mPackageInfoList[position].usedCount}"
+        holder.tvCalculateUsedTime.text =
+            "${mPackageInfoList[position].usedTime / 1000}s / " + DateUtils.formatElapsedTime(
+                mPackageInfoList[position].usedTime / 1000
+            )
+        //DateTransUtils.formatElapsedTime(mPackageInfoList.get(position).usedTime/1000)
+        holder.tvUsedTime.text =
+            "${getTotalTimeInForegroundFromUsage(mPackageInfoList[position].packageName) / 1000} s"
+        holder.itemView.setOnClickListener { v ->
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener!!.onItemClick(v, mPackageInfoList[position].packageName)
             }
         }
+    }
 
-        return useTime;
+    override fun getItemCount(): Int {
+        return mPackageInfoList.size
+    }
+
+    inner class UseTimeViewHolder(itemView: View) : ViewHolder(itemView) {
+        var tvIndex: TextView = itemView.findViewById<View>(R.id.index) as TextView
+        var ivIcon: ImageView = itemView.findViewById<View>(R.id.app_icon) as ImageView
+        var tvUsedCount: TextView = itemView.findViewById<View>(R.id.use_count) as TextView
+        var tvUsedTime: TextView = itemView.findViewById<View>(R.id.use_time) as TextView
+        var tvCalculateUsedTime: TextView = itemView.findViewById<View>(R.id.calculate_use_time) as TextView
+
+    }
+
+    private fun calculateUseTime(list: ArrayList<OneTimeDetails>, pkg: String): Long {
+        var useTime: Long = 0
+        for (i in list.indices) {
+            if (list[i].pkgName == pkg) {
+                useTime += list[i].useTime
+            }
+        }
+        return useTime
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private long getTotalTimeFromUsage(String pkg){
-        UsageStats stats = mUseTimeDataManager.getUsageStats(pkg);
-        if(stats == null){
-            return 0;
-        }
-        return stats.getTotalTimeInForeground();
+    private fun getTotalTimeInForegroundFromUsage(pkg: String): Long {
+        val stats = mUseTimeDataManager.getUsageStats(pkg) ?: return 0
+        return stats.totalTimeInForeground
     }
+
+    /**
+     * totalTimeVisible和totalTimeInForeground这两个值相等
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun getTotalTimeVisibleFromUsage(pkg: String): Long {
+        val stats = mUseTimeDataManager.getUsageStats(pkg) ?: return 0
+        return stats.totalTimeVisible
+    }
+
 }

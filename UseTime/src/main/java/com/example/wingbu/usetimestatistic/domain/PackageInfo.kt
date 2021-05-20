@@ -1,66 +1,38 @@
-package com.example.wingbu.usetimestatistic.domain;
+package com.example.wingbu.usetimestatistic.domain
 
 /**
  * 统计数据---记录每个应用的包名，使用时长和使用次数
  *
  * Created by Wingbu on 2017/7/18.
  */
-
-public class PackageInfo {
-    private int      mUsedCount;
-    private long     mUsedTime;
-    private String   mPackageName;
-
-    public PackageInfo(int mUsedCount, long mUsedTime, String mPackageName) {
-        this.mUsedCount = mUsedCount;
-        this.mUsedTime = mUsedTime;
-        this.mPackageName = mPackageName;
+class PackageInfo(
+    var usedCount: Int,
+    var usedTime: Long,
+    var packageName: String
+) {
+    fun addCount() {
+        usedCount++
     }
 
-    public void addCount(){
-        mUsedCount++;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as PackageInfo
+
+        if (usedCount != other.usedCount) return false
+        if (usedTime != other.usedTime) return false
+        if (packageName != other.packageName) return false
+
+        return true
     }
 
-    public int getmUsedCount() {
-        return mUsedCount;
+    override fun hashCode(): Int {
+        var result = usedCount
+        result = 31 * result + usedTime.hashCode()
+        result = 31 * result + packageName.hashCode()
+        return result
     }
 
-    public void setmUsedCount(int mUsedCount) {
-        this.mUsedCount = mUsedCount;
-    }
 
-    public long getmUsedTime() {
-        return mUsedTime;
-    }
-
-    public void setmUsedTime(long mUsedTime) {
-        this.mUsedTime = mUsedTime;
-    }
-
-    public String getmPackageName() {
-        return mPackageName;
-    }
-
-    public void setmPackageName(String mPackageName) {
-        this.mPackageName = mPackageName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        //return super.equals(o);
-        if(o == null) return false;
-        if(this == o) return true;
-        PackageInfo standardDetail = (PackageInfo)o;
-        if( standardDetail.getmPackageName().equals(this.mPackageName) ){
-            return true;
-        }else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        //return super.hashCode();
-        return (mPackageName + mUsedTime).hashCode();
-    }
 }

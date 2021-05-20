@@ -1,74 +1,54 @@
-package com.example.wingbu.usetimestatistic.adapter;
+package com.example.wingbu.usetimestatistic.adapter
 
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.example.wingbu.usetimestatistic.R;
-
-import java.util.ArrayList;
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.wingbu.usetimestatistic.R
+import com.example.wingbu.usetimestatistic.adapter.SelectDateAdapter.SelectDateViewHolder
+import java.util.*
 
 /**
  * 主界面日期选择
  *
  * Created by Wingbu on 2017/10/16.
  */
-
-public class SelectDateAdapter extends RecyclerView.Adapter<SelectDateAdapter.SelectDateViewHolder>{
-
-    private ArrayList<String> mDateList;
-
-    private OnRecyclerViewItemClickListener mOnItemClickListener = null;
+class SelectDateAdapter(private val mDateList: ArrayList<String>) :
+    RecyclerView.Adapter<SelectDateViewHolder>() {
+    private var mOnItemClickListener: OnRecyclerViewItemClickListener? = null
 
     //define interface
-    public  interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view ,int position);
+    interface OnRecyclerViewItemClickListener {
+        fun onItemClick(view: View?, position: Int)
     }
 
-    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
-        this.mOnItemClickListener = listener;
+    fun setOnItemClickListener(listener: OnRecyclerViewItemClickListener?) {
+        mOnItemClickListener = listener
     }
 
-    public SelectDateAdapter(ArrayList<String> dateList) {
-        this.mDateList = dateList;
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SelectDateViewHolder {
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.selece_date_item, parent, false)
+        return SelectDateViewHolder(v)
     }
 
-    @Override
-    public SelectDateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.selece_date_item, parent, false);
-        SelectDateViewHolder holder = new SelectDateViewHolder(v);
-        return holder;
-    }
-
-    @Override
-    public void onBindViewHolder(SelectDateViewHolder holder, int position) {
-        holder.tv_item_select_date.setText( mDateList.get(position));
-        final int i = position;
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClick(v,i);
-                }
+    override fun onBindViewHolder(holder: SelectDateViewHolder, position: Int) {
+        holder.tvItemSelectDate.text = mDateList[position]
+        holder.itemView.setOnClickListener { v ->
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener!!.onItemClick(v, position)
             }
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDateList.size();
-    }
-
-    public class SelectDateViewHolder extends RecyclerView.ViewHolder {
-
-        public TextView tv_item_select_date;
-
-        public SelectDateViewHolder(View itemView) {
-            super(itemView);
-            tv_item_select_date = (TextView) itemView.findViewById(R.id.tv_item_select_date);
         }
+    }
+
+    override fun getItemCount(): Int {
+        return mDateList.size
+    }
+
+    inner class SelectDateViewHolder(itemView: View) : ViewHolder(itemView) {
+        var tvItemSelectDate: TextView = itemView.findViewById<View>(R.id.tv_item_select_date) as TextView
+
     }
 }

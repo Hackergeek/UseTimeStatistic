@@ -1,82 +1,77 @@
-package com.example.wingbu.usetimestatistic.adapter;
+package com.example.wingbu.usetimestatistic.adapter
 
-import android.annotation.TargetApi;
-import android.app.usage.UsageEvents;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.example.wingbu.usetimestatistic.R;
-import com.example.wingbu.usetimestatistic.utils.DateTransUtils;
-
-import java.util.ArrayList;
+import android.annotation.TargetApi
+import android.app.usage.UsageEvents
+import android.content.pm.PackageManager
+import android.os.Build
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.wingbu.usetimestatistic.R
+import com.example.wingbu.usetimestatistic.utils.DateTransUtils.stampToDate
+import java.util.*
 
 /**
  * Created by Wingbu on 2017/7/20.
  */
-
-public class UseTimeEveryDetailAdapter extends RecyclerView.Adapter<UseTimeEveryDetailAdapter.UseTimeDetailViewHolder>{
-
-    private ArrayList<UsageEvents.Event> mOneTimeDetailEventInfoList;
-    private PackageManager packageManager;
-
-    public UseTimeEveryDetailAdapter(ArrayList<UsageEvents.Event> mOneTimeDetailEventInfoList) {
-        this.mOneTimeDetailEventInfoList = mOneTimeDetailEventInfoList;
-    }
-
-    @Override
-    public UseTimeDetailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        packageManager = parent.getContext().getPackageManager();
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.one_pkg_use_time_detail_item_layout, parent, false);
-        UseTimeDetailViewHolder holder = new UseTimeDetailViewHolder(v);
-        return holder;
+class UseTimeEveryDetailAdapter(private val mOneTimeDetailEventInfoList: ArrayList<UsageEvents.Event>) :
+    RecyclerView.Adapter<UseTimeEveryDetailAdapter.UseTimeDetailViewHolder>() {
+    private var packageManager: PackageManager? = null
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): UseTimeDetailViewHolder {
+        packageManager = parent.context.packageManager
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.one_pkg_use_time_detail_item_layout, parent, false)
+        return UseTimeDetailViewHolder(v)
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void onBindViewHolder(UseTimeDetailViewHolder holder, int position) {
-        holder.tv_index.setText("" + (position+1) );
+    override fun onBindViewHolder(holder: UseTimeDetailViewHolder, position: Int) {
+        holder.tv_index.text = "" + (position + 1)
         try {
-            holder.iv_icon.setImageDrawable(packageManager.getApplicationIcon(mOneTimeDetailEventInfoList.get(position).getPackageName()));
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            holder.iv_icon.setImageDrawable(
+                packageManager!!.getApplicationIcon(
+                    mOneTimeDetailEventInfoList[position].packageName
+                )
+            )
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
         }
-
-        holder.tv_activity_name.setText(mOneTimeDetailEventInfoList.get( position * 2 ).getClassName());
-        holder.tv_activity_total_use_time.setText((mOneTimeDetailEventInfoList.get( position * 2 + 1).getTimeStamp() - mOneTimeDetailEventInfoList.get( position * 2 ).getTimeStamp())/1000+"s / " + (mOneTimeDetailEventInfoList.get( position * 2 + 1).getTimeStamp() - mOneTimeDetailEventInfoList.get( position * 2 ).getTimeStamp())+" ms");
-        holder.tv_start_used_time.setText(DateTransUtils.stampToDate(mOneTimeDetailEventInfoList.get(position * 2).getTimeStamp()));
-        holder.tv_stop_used_time.setText(DateTransUtils.stampToDate(mOneTimeDetailEventInfoList.get( position * 2 + 1).getTimeStamp()));
+        holder.tv_activity_name.text = mOneTimeDetailEventInfoList[position * 2].className
+        holder.tv_activity_total_use_time.text =
+            ((mOneTimeDetailEventInfoList[position * 2 + 1].timeStamp - mOneTimeDetailEventInfoList[position * 2].timeStamp) / 1000).toString() + "s / " + (mOneTimeDetailEventInfoList[position * 2 + 1].timeStamp - mOneTimeDetailEventInfoList[position * 2].timeStamp) + " ms"
+        holder.tv_start_used_time.text =
+            stampToDate(mOneTimeDetailEventInfoList[position * 2].timeStamp)
+        holder.tv_stop_used_time.text =
+            stampToDate(mOneTimeDetailEventInfoList[position * 2 + 1].timeStamp)
     }
 
-    @Override
-    public int getItemCount() {
-        return mOneTimeDetailEventInfoList.size()/2;
+    override fun getItemCount(): Int {
+        return mOneTimeDetailEventInfoList.size / 2
     }
 
-    public class UseTimeDetailViewHolder extends RecyclerView.ViewHolder {
+    inner class UseTimeDetailViewHolder(itemView: View) : ViewHolder(itemView) {
+        var tv_index: TextView
+        var iv_icon: ImageView
+        var tv_activity_name: TextView
+        var tv_activity_total_use_time: TextView
+        var tv_start_used_time: TextView
+        var tv_stop_used_time: TextView
 
-        public TextView   tv_index;
-        public ImageView  iv_icon;
-        public TextView   tv_activity_name;
-        public TextView   tv_activity_total_use_time;
-        public TextView   tv_start_used_time;
-        public TextView   tv_stop_used_time;
-
-
-        public UseTimeDetailViewHolder(View itemView) {
-            super(itemView);
-            tv_index = (TextView) itemView.findViewById(R.id.index);
-            iv_icon = (ImageView) itemView.findViewById(R.id.app_icon);
-            tv_activity_name= (TextView) itemView.findViewById(R.id.activity_name);
-            tv_activity_total_use_time= (TextView) itemView.findViewById(R.id.activity_total_use_time);
-            tv_start_used_time = (TextView) itemView.findViewById(R.id.start_use_time);
-            tv_stop_used_time = (TextView) itemView.findViewById(R.id.stop_use_time);
+        init {
+            tv_index = itemView.findViewById<View>(R.id.index) as TextView
+            iv_icon = itemView.findViewById<View>(R.id.app_icon) as ImageView
+            tv_activity_name = itemView.findViewById<View>(R.id.activity_name) as TextView
+            tv_activity_total_use_time =
+                itemView.findViewById<View>(R.id.activity_total_use_time) as TextView
+            tv_start_used_time = itemView.findViewById<View>(R.id.start_use_time) as TextView
+            tv_stop_used_time = itemView.findViewById<View>(R.id.stop_use_time) as TextView
         }
     }
 }
