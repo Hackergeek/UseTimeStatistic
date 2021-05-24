@@ -1,7 +1,5 @@
 package com.example.wingbu.usetimestatistic.utils
 
-import android.util.Log
-
 /**
  * Created by Wingbu on 2017/7/18.
  */

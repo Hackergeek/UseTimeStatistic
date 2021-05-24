@@ -26,7 +26,7 @@ object WriteStatisticDataFileUtils {
     }
 
     private fun writeToFile(appUsageList: ArrayList<AppUsageDaily>) {
-        val file = File(BASE_FILE_PATH + "/" + FILE_NAME)
+        val file = File("$BASE_FILE_PATH/$FILE_NAME")
         if (!file.exists()) {
             createFile(file)
         }

@@ -44,7 +44,7 @@ object ReadRecordFileUtils {
     }
 
     fun getAllStringLines(baseFilePath: String, timeStamp: Long): ArrayList<String?>? {
-        val fileName = DateTransUtils.getZeroClockTimestamp(timeStamp)
+        val fileName = DateTransUtils.getZeroClockTimestampDongbaDistrict(timeStamp)
         val file = File("$baseFilePath/$fileName.txt")
         if (!file.exists()) {
             Log.i(TAG, "读取RecordFile文件内容时，文件不存在")
@@ -75,7 +75,7 @@ object ReadRecordFileUtils {
     }
 
     fun getFirstStringLines(baseFilePath: String, timeStamp: Long): String? {
-        val fileName = DateTransUtils.getZeroClockTimestamp(timeStamp)
+        val fileName = DateTransUtils.getZeroClockTimestampDongbaDistrict(timeStamp)
         val file = File("$baseFilePath/$fileName.txt")
         if (!file.exists()) {
             Log.i(TAG, "读取RecordFile文件内容时，文件不存在")

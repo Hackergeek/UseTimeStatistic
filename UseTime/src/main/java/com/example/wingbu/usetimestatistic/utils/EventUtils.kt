@@ -31,7 +31,7 @@ object EventUtils {
         while (events.hasNextEvent()) {
             val e = UsageEvents.Event()
             events.getNextEvent(e)
-            if (e.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND || e.eventType == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+            if (e.eventType == UsageEvents.Event.ACTIVITY_RESUMED || e.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {
                 mEventList.add(e)
             }
         }
@@ -47,10 +47,6 @@ object EventUtils {
         for ((_, stats) in map) {
             if (stats.totalTimeInForeground > 0) {
                 list.add(stats)
-                Log.i(
-                    TAG,
-                    " EventUtils-getUsageList()   stats:" + stats.packageName + "   TotalTimeInForeground = " + stats.totalTimeInForeground
-                )
             }
         }
         return list

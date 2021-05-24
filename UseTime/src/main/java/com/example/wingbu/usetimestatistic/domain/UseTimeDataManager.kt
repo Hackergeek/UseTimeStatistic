@@ -11,7 +11,7 @@ import com.example.wingbu.usetimestatistic.event.MessageEvent
 import com.example.wingbu.usetimestatistic.event.MsgEventBus.instance
 import com.example.wingbu.usetimestatistic.event.TimeEvent
 import com.example.wingbu.usetimestatistic.utils.DateTransUtils
-import com.example.wingbu.usetimestatistic.utils.DateTransUtils.getZeroClockTimestamp
+import com.example.wingbu.usetimestatistic.utils.DateTransUtils.getZeroClockTimestampDongbaDistrict
 import com.example.wingbu.usetimestatistic.utils.EventUtils.getEventList
 import com.example.wingbu.usetimestatistic.utils.EventUtils.getUsageList
 import java.lang.reflect.Field
@@ -146,10 +146,10 @@ class UseTimeDataManager(private val mContext: Context?) {
         var startTime: Long = 0
         if (dayNumber == 0) {
             endTime = System.currentTimeMillis()
-            startTime = getZeroClockTimestamp(endTime)
+            startTime = getZeroClockTimestampDongbaDistrict(endTime)
         } else {
             endTime =
-                getZeroClockTimestamp(System.currentTimeMillis() - (dayNumber - 1) * DateTransUtils.DAY_IN_MILLIS) - 1
+                getZeroClockTimestampDongbaDistrict(System.currentTimeMillis() - (dayNumber - 1) * DateTransUtils.DAY_IN_MILLIS) - 1
             startTime = endTime - DateTransUtils.DAY_IN_MILLIS + 1
         }
         return getEventList(mContext!!, startTime, endTime)
@@ -162,22 +162,22 @@ class UseTimeDataManager(private val mContext: Context?) {
         var startTime: Long = 0
         if (dayNumber == 0) {
             endTime = System.currentTimeMillis()
-            startTime = getZeroClockTimestamp(endTime)
+            startTime = getZeroClockTimestampDongbaDistrict(endTime)
         } else {
             endTime =
-                getZeroClockTimestamp(System.currentTimeMillis() - (dayNumber - 1) * DateTransUtils.DAY_IN_MILLIS) - 1
+                getZeroClockTimestampDongbaDistrict(System.currentTimeMillis() - (dayNumber - 1) * DateTransUtils.DAY_IN_MILLIS) - 1
             startTime = endTime - DateTransUtils.DAY_IN_MILLIS + 1
         }
         return getUsageList(mContext!!, startTime, endTime)
     }
 
-    //仅保留type为MOVE_TO_FOREGROUND和MOVE_TO_BACKGROUND的event
+    //仅保留type为ACTIVITY_PAUSED和ACTIVITY_RESUMED的event
     @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private val eventListChecked: ArrayList<UsageEvents.Event>
         private get() {
             val mList = ArrayList<UsageEvents.Event>()
             for (i in mEventList!!.indices) {
-                if (mEventList!![i].eventType == 1 || mEventList!![i].eventType == 2) {
+                if (mEventList!![i].eventType == UsageEvents.Event.ACTIVITY_PAUSED || mEventList!![i].eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
                     mList.add(mEventList!![i])
                 }
             }
@@ -274,12 +274,12 @@ class UseTimeDataManager(private val mContext: Context?) {
         var isCheckAgain = false
         var i = 0
         while (i < list.size - 1) {
-            if (list[i]!!.className == list[i + 1]!!.className) {
-                if (list[i]!!.eventType != 1) {
+            if (list[i].className == list[i + 1].className) {
+                if (list[i].eventType != 1) {
                     Log.i(
-                        TAG, "   EventList 出错  ： " + list[i]!!
+                        TAG, "   EventList 出错  ： " + list[i]
                             .packageName + "  " + DateUtils.formatSameDayTime(
-                            list[i]!!.timeStamp,
+                            list[i].timeStamp,
                             System.currentTimeMillis(),
                             DateFormat.MEDIUM,
                             DateFormat.MEDIUM
@@ -289,11 +289,11 @@ class UseTimeDataManager(private val mContext: Context?) {
                     isCheckAgain = true
                     break
                 }
-                if (list[i + 1]!!.eventType != 2) {
+                if (list[i + 1].eventType != 2) {
                     Log.i(
-                        TAG, "   EventList 出错 ： " + list[i + 1]!!
+                        TAG, "   EventList 出错 ： " + list[i + 1]
                             .packageName + "  " + DateUtils.formatSameDayTime(
-                            list[i + 1]!!.timeStamp,
+                            list[i + 1].timeStamp,
                             System.currentTimeMillis(),
                             DateFormat.MEDIUM,
                             DateFormat.MEDIUM

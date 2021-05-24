@@ -19,9 +19,9 @@ import java.io.IOException
  * Created by Wingbu on 2017/7/18.
  */
 object EventCopyToFileUtils {
-    const val TAG = "EventUtils"
-    const val BASE_FILE_PATH = "/data/data/com.example.wingbu.usetimestatistic/files/event_copy"
-    const val MAX_FILE_NUMBER = 7
+    private const val TAG = "EventUtils"
+    private const val BASE_FILE_PATH = "/data/data/com.example.wingbu.usetimestatistic/files/event_copy"
+    private const val MAX_FILE_NUMBER = 7
     @JvmStatic
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     fun write(context: Context, startTime: Long, endTime: Long) {
@@ -29,7 +29,7 @@ object EventCopyToFileUtils {
         if (eventList.size == 0) {
             return
         }
-        val fileName = DateTransUtils.getZeroClockTimestamp(startTime)
+        val fileName = DateTransUtils.getZeroClockTimestampDongbaDistrict(startTime)
         val filePath = "$BASE_FILE_PATH/$fileName.txt"
         try {
             checkFile(filePath)

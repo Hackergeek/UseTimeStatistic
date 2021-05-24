@@ -26,7 +26,7 @@ object WriteRecordFileUtils {
         if (currentFileName == 0L) {
             currentFileName = latestFileName
         }
-        val time = DateTransUtils.getZeroClockTimestamp(timeStamp)
+        val time = DateTransUtils.getZeroClockTimestampDongbaDistrict(timeStamp)
         if (time == currentFileName) {
             writeToFile(time, timeStamp, className, type, activeTime)
         } else if (time > currentFileName) {

@@ -8,8 +8,8 @@ import java.util.*
  * Created by Wingbu on 2017/7/18.
  */
 object DateTransUtils {
-    private val dateFormat = SimpleDateFormat("M-d-yyyy")
-    const val DAY_IN_MILLIS = (24 * 60 * 60 * 1000).toLong()
+    private const val HOUR_IN_MILLS = (60 * 60 * 1000).toLong()
+    const val DAY_IN_MILLIS = (24 * HOUR_IN_MILLS)
 
     /*
      * 将时间戳转换为时间
@@ -27,8 +27,8 @@ object DateTransUtils {
     fun stampToDate(stamp: Long): String {
         val res: String
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val date = Date(stamp)
-        res = simpleDateFormat.format(date)
+//        val date = Date(stamp)
+        res = simpleDateFormat.format(stamp)
         return res
     }
 
@@ -47,15 +47,22 @@ object DateTransUtils {
         return todayStamp
     }
 
-    //获取当日00:00:00的时间戳,东八区则为早上八点
+    /**
+     *  获取今日零点的时间戳（东八区时间，格林尼治时间则为昨日下午四点）
+     */
     @JvmStatic
-    fun getZeroClockTimestamp(time: Long): Long {
+    fun getZeroClockTimestampDongbaDistrict(time: Long): Long {
         var currentStamp = time
         currentStamp -= currentStamp % DAY_IN_MILLIS
-        Log.i(
-            "Wingbu",
-            " DateTransUtils-getZeroClockTimestamp()  获取当日00:00:00的时间戳,东八区则为早上八点 :$currentStamp"
-        )
+        currentStamp -= 8 * HOUR_IN_MILLS
+        return currentStamp
+    }
+
+    //获取当日00:00:00的时间戳,东八区则为早上八点
+    @JvmStatic
+    fun getZeroClockTimestamp(time:Long): Long {
+        var currentStamp = time
+        currentStamp -= currentStamp % DAY_IN_MILLIS
         return currentStamp
     }
 
@@ -72,6 +79,7 @@ object DateTransUtils {
 
     //获取dayNumber天前，当天的日期字符串
     private fun getDateString(dayNumber: Int): String {
+        val dateFormat = SimpleDateFormat("M-d-yyyy", Locale.getDefault())
         val time = System.currentTimeMillis() - dayNumber * DAY_IN_MILLIS
         Log.i("Wingbu", " DateTransUtils-getDateString()  获取查询的日期 :" + dateFormat.format(time))
         return dateFormat.format(time)
